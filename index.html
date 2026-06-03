@@ -303,24 +303,17 @@ function showApp() {
 }
 
 function signIn() {
-  if (typeof google === 'undefined' || !google.accounts) {
-    showLoginError('Error cargando Google. Verifica tu conexión e intenta de nuevo.');
-    return;
-  }
-
-  try {
-    const client = google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
-      scope: 'https://www.googleapis.com/auth/spreadsheets.readonly profile email',
-      callback: handleAuthResponse,
-      error_callback: (err) => {
-        showLoginError('Error al iniciar sesión: ' + (err.message || err.type || 'desconocido'));
-      }
-    });
-    client.requestAccessToken();
-  } catch(e) {
-    showLoginError('Error: ' + e.message);
-  }
+  // Use redirect flow — works on iOS Safari, Android, desktop
+  const REDIRECT_URI = 'https://jaiderhernandezme.github.io/final-station/';
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: 'token',
+    scope: 'https://www.googleapis.com/auth/spreadsheets.readonly profile email',
+    include_granted_scopes: 'true',
+    state: 'signin'
+  });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
 
 function handleAuthResponse(response) {
@@ -514,4 +507,8 @@ function renderSearch(q, content) {
           <div class="result-item"><div class="label">Ola</div><div class="value"><span class="ola-badge ${d.station==='RESERVA'?'reserva':''}">${d.ola||'—'}</span></div></div>
           <div class="result-item"><div class="label">Hora ETA</div><div class="value" style="font-size:16px">${d.hora||'—'}</div></div>
           <div class="result-item"><div class="label">Ciclo</div><div class="value" style="font-size:16px"><span class="ciclo-chip ${d.ciclo}">${d.ciclo}</span></div></div>
-          ${d.svc?`<div class="result-item full"><div class="label">
+          ${d.svc?`<div class="result-item full"><div class="label">Servicio</div><div class="value" style="font-size:14px">${d.svc}</div></div>`:''}
+        </div></div>`;
+    });
+  }
+ 
