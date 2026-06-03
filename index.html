@@ -11,132 +11,83 @@
   <title>Final Station – Conductores</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --yellow: #FFE600;
-      --dark: #1A1A1A;
-      --gray: #F5F5F5;
-      --border: #E0E0E0;
-      --text: #333;
-      --muted: #777;
-      --green: #00A650;
-      --orange: #FF7733;
-      --blue: #3483FA;
-      --red: #F23D4F;
+      --yellow: #FFE600; --dark: #1A1A1A; --gray: #F5F5F5;
+      --border: #E0E0E0; --text: #333; --muted: #777;
+      --green: #00A650; --orange: #FF7733; --blue: #3483FA; --red: #F23D4F;
     }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray); color: var(--text); min-height: 100vh; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--gray);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 32px 24px; background: var(--yellow);
+    }
+    .login-logo { font-size: 56px; margin-bottom: 16px; }
+    .login-title { font-size: 28px; font-weight: 900; color: var(--dark); margin-bottom: 6px; }
+    .login-sub { font-size: 15px; color: #555; margin-bottom: 40px; text-align: center; }
+    .google-btn {
+      display: flex; align-items: center; gap: 12px;
+      background: white; color: var(--dark); border: none; border-radius: 12px;
+      padding: 14px 24px; font-size: 16px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12); transition: transform 0.1s;
+      width: 100%; max-width: 320px; justify-content: center;
+    }
+    .google-btn:active { transform: scale(0.97); }
+    .google-icon { width: 22px; height: 22px; }
+    .login-note { font-size: 12px; color: #666; margin-top: 20px; text-align: center; }
+    .login-error {
+      background: var(--red); color: white; border-radius: 10px;
+      padding: 12px 16px; font-size: 13px; margin-top: 16px;
+      max-width: 320px; text-align: center; display: none;
     }
 
     /* ── HEADER ── */
     header {
-      background: var(--yellow);
-      padding: 14px 16px 10px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: var(--yellow); padding: 14px 16px 10px;
+      position: sticky; top: 0; z-index: 100;
       box-shadow: 0 2px 8px rgba(0,0,0,0.12);
     }
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    header h1 {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--dark);
-      letter-spacing: -0.3px;
-    }
+    .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    header h1 { font-size: 18px; font-weight: 800; color: var(--dark); }
+    .header-right { display: flex; align-items: center; gap: 8px; }
     .refresh-btn {
-      background: var(--dark);
-      color: var(--yellow);
-      border: none;
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      transition: opacity 0.2s;
+      background: var(--dark); color: var(--yellow); border: none; border-radius: 20px;
+      padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
     }
-    .refresh-btn:active { opacity: 0.7; }
     .refresh-btn.loading .icon { animation: spin 1s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── SEARCH ── */
-    .search-wrap {
-      position: relative;
+    .user-avatar {
+      width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--dark);
+      cursor: pointer; object-fit: cover; background: #ccc;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; overflow: hidden;
     }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .search-wrap { position: relative; }
     .search-wrap input {
-      width: 100%;
-      padding: 10px 40px 10px 38px;
-      border-radius: 10px;
-      border: 2px solid transparent;
-      background: white;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--dark);
-      outline: none;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: border-color 0.2s;
+      width: 100%; padding: 10px 40px 10px 38px; border-radius: 10px;
+      border: 2px solid transparent; background: white; font-size: 16px;
+      font-weight: 500; color: var(--dark); outline: none;
+      text-transform: uppercase; letter-spacing: 1px; transition: border-color 0.2s;
     }
     .search-wrap input:focus { border-color: var(--dark); }
-    .search-wrap .icon-search {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 16px;
-      pointer-events: none;
-    }
+    .search-wrap .icon-search { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; }
     .search-wrap .clear-btn {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #ccc;
-      border: none;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      font-size: 13px;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 700;
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: #ccc; border: none; border-radius: 50%; width: 22px; height: 22px;
+      font-size: 13px; cursor: pointer; display: none; align-items: center; justify-content: center;
+      color: white; font-weight: 700;
     }
     .search-wrap.has-text .clear-btn { display: flex; }
 
     /* ── STATUS BAR ── */
     .status-bar {
-      background: white;
-      padding: 8px 16px;
-      font-size: 12px;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border-bottom: 1px solid var(--border);
+      background: white; padding: 8px 16px; font-size: 12px; color: var(--muted);
+      display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border);
     }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ccc;
-      flex-shrink: 0;
-    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; flex-shrink: 0; }
     .status-dot.ok { background: var(--green); }
     .status-dot.error { background: var(--red); }
     .status-dot.loading { background: var(--orange); animation: pulse 1s infinite; }
@@ -144,641 +95,422 @@
 
     /* ── TABS ── */
     .tabs {
-      display: flex;
-      background: white;
-      border-bottom: 2px solid var(--border);
-      position: sticky;
-      top: 110px;
-      z-index: 90;
+      display: flex; background: white; border-bottom: 2px solid var(--border);
+      position: sticky; top: 110px; z-index: 90;
     }
     .tab {
-      flex: 1;
-      padding: 12px 8px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s;
-      user-select: none;
+      flex: 1; padding: 12px 8px; text-align: center; font-size: 13px; font-weight: 600;
+      color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent;
+      transition: all 0.2s; user-select: none;
     }
-    .tab.active {
-      color: var(--dark);
-      border-bottom-color: var(--dark);
-    }
+    .tab.active { color: var(--dark); border-bottom-color: var(--dark); }
 
     /* ── CONTENT ── */
     .content { padding: 12px 12px 80px; }
 
-    /* ── SEARCH RESULT ── */
     .result-card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      border-left: 5px solid var(--yellow);
+      background: white; border-radius: 16px; padding: 20px; margin-bottom: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-left: 5px solid var(--yellow);
     }
-    .result-card.not-found {
-      border-left-color: var(--red);
-      text-align: center;
-      color: var(--muted);
-    }
-    .result-plate {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: 3px;
-      color: var(--dark);
-      margin-bottom: 14px;
-    }
-    .result-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .result-item {
-      background: var(--gray);
-      border-radius: 10px;
-      padding: 12px;
-    }
-    .result-item .label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .result-item .value {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--dark);
-    }
+    .result-card.not-found { border-left-color: var(--red); text-align: center; color: var(--muted); }
+    .result-plate { font-size: 28px; font-weight: 900; letter-spacing: 3px; color: var(--dark); margin-bottom: 14px; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .result-item { background: var(--gray); border-radius: 10px; padding: 12px; }
+    .result-item .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 4px; }
+    .result-item .value { font-size: 20px; font-weight: 800; color: var(--dark); }
     .result-item.full { grid-column: 1 / -1; }
-
-    /* Badge para ola */
-    .ola-badge {
-      display: inline-block;
-      background: var(--blue);
-      color: white;
-      border-radius: 6px;
-      padding: 2px 10px;
-      font-size: 13px;
-      font-weight: 700;
-    }
+    .ola-badge { display: inline-block; background: var(--blue); color: white; border-radius: 6px; padding: 2px 10px; font-size: 13px; font-weight: 700; }
     .ola-badge.reserva { background: var(--orange); }
 
-    /* ── DRIVER ROWS ── */
-    .section-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--muted);
-      margin: 16px 0 8px;
-      padding-left: 4px;
-    }
-
+    .section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 16px 0 8px; padding-left: 4px; }
     .driver-card {
-      background: white;
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 8px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-      cursor: pointer;
-      transition: transform 0.1s;
+      background: white; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px;
+      display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.1s;
     }
     .driver-card:active { transform: scale(0.98); }
-
-    .driver-plate {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-      color: var(--dark);
-    }
-    .driver-meta {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .driver-plate { font-size: 18px; font-weight: 800; letter-spacing: 1.5px; color: var(--dark); }
+    .driver-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .driver-meta span { margin-right: 8px; }
-
-    .driver-right {
-      text-align: right;
-    }
-    .driver-station {
-      font-size: 22px;
-      font-weight: 900;
-      color: var(--dark);
-    }
-    .driver-ola {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-    }
-
-    /* Chip de ciclo */
-    .ciclo-chip {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: var(--gray);
-      color: var(--muted);
-      margin-right: 4px;
-    }
+    .driver-right { text-align: right; }
+    .driver-station { font-size: 22px; font-weight: 900; color: var(--dark); }
+    .driver-ola { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .ciclo-chip { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: var(--gray); color: var(--muted); margin-right: 4px; }
     .ciclo-chip.AM { background: #FFF3CD; color: #856404; }
     .ciclo-chip.PM { background: #CCE5FF; color: #004085; }
     .ciclo-chip.AMT { background: #D4EDDA; color: #155724; }
 
-    /* ── EMPTY / SKELETON ── */
-    .empty-state {
-      text-align: center;
-      padding: 48px 24px;
-      color: var(--muted);
-    }
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--muted); }
     .empty-state .emoji { font-size: 48px; margin-bottom: 12px; }
-    .empty-state p { font-size: 15px; line-height: 1.5; }
-
-    .skeleton {
-      background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite;
-      border-radius: 8px;
-      height: 60px;
-      margin-bottom: 8px;
-    }
+    .skeleton { background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; border-radius: 8px; height: 60px; margin-bottom: 8px; }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ── USER MENU ── */
+    .user-menu {
+      position: fixed; top: 60px; right: 12px; background: white; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 12px; z-index: 200;
+      min-width: 200px; display: none;
+    }
+    .user-menu.open { display: block; }
+    .user-name { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+    .user-email { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+    .logout-btn {
+      width: 100%; background: var(--gray); border: none; border-radius: 8px;
+      padding: 10px; font-size: 14px; font-weight: 600; color: var(--red);
+      cursor: pointer; text-align: left;
+    }
 
     /* ── INSTALL BANNER ── */
     #install-banner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--dark);
-      color: white;
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      z-index: 200;
-      box-shadow: 0 -4px 16px rgba(0,0,0,0.2);
+      position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark);
+      color: white; padding: 14px 16px; display: flex; align-items: center;
+      justify-content: space-between; gap: 10px; z-index: 200; display: none;
     }
     #install-banner p { font-size: 13px; line-height: 1.3; }
     #install-banner p strong { display: block; font-size: 14px; margin-bottom: 2px; }
-    .install-btn {
-      background: var(--yellow);
-      color: var(--dark);
-      border: none;
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-size: 14px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    .dismiss-btn {
-      background: none;
-      border: none;
-      color: #aaa;
-      font-size: 18px;
-      cursor: pointer;
-      padding: 4px;
-      flex-shrink: 0;
-    }
-
-    /* ── HIGHLIGHT ── */
+    .install-btn { background: var(--yellow); color: var(--dark); border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 800; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .dismiss-btn { background: none; border: none; color: #aaa; font-size: 18px; cursor: pointer; padding: 4px; flex-shrink: 0; }
     mark { background: var(--yellow); border-radius: 2px; padding: 0 2px; }
+
+    /* ── CONFIG NOTICE ── */
+    .config-notice {
+      background: #FFF3CD; border: 1px solid #FFEAA7; border-radius: 10px;
+      padding: 14px 16px; margin: 12px; font-size: 13px; color: #856404; line-height: 1.5;
+    }
+    .config-notice strong { display: block; margin-bottom: 4px; font-size: 14px; }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="header-top">
-    <h1>🚚 Final Station</h1>
-    <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
-      <span class="icon">↻</span> Actualizar
-    </button>
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:none">
+  <div class="login-logo">🚚</div>
+  <div class="login-title">Final Station</div>
+  <div class="login-sub">Sistema de conductores<br>Ingresa con tu cuenta corporativa</div>
+  <button class="google-btn" onclick="signIn()">
+    <svg class="google-icon" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+    Ingresar con Google
+  </button>
+  <div class="login-note">Solo cuentas @mercadolibre.com.co</div>
+  <div class="login-error" id="login-error"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <header>
+    <div class="header-top">
+      <h1>🚚 Final Station</h1>
+      <div class="header-right">
+        <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+          <span class="icon">↻</span> Actualizar
+        </button>
+        <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">
+          <span id="userInitial">?</span>
+        </div>
+      </div>
+    </div>
+    <div class="search-wrap" id="searchWrap">
+      <span class="icon-search">🔍</span>
+      <input type="text" id="searchInput" placeholder="Buscar placa... (ej: KMK727)"
+        autocomplete="off" autocorrect="off" spellcheck="false" maxlength="10" />
+      <button class="clear-btn" onclick="clearSearch()">✕</button>
+    </div>
+  </header>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Cargando datos...</span>
   </div>
-  <div class="search-wrap" id="searchWrap">
-    <span class="icon-search">🔍</span>
-    <input type="text" id="searchInput" placeholder="Buscar placa... (ej: KMK727)"
-      autocomplete="off" autocorrect="off" spellcheck="false" maxlength="10" />
-    <button class="clear-btn" onclick="clearSearch()">✕</button>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-tab="todos" onclick="switchTab('todos')">📋 Todos</div>
+    <div class="tab" data-tab="AM" onclick="switchTab('AM')">🌅 AM</div>
+    <div class="tab" data-tab="PM" onclick="switchTab('PM')">🌆 PM</div>
+    <div class="tab" data-tab="registro" onclick="switchTab('registro')">📁 Registro</div>
   </div>
-</header>
 
-<div class="status-bar">
-  <div class="status-dot" id="statusDot"></div>
-  <span id="statusText">Cargando datos...</span>
+  <div class="content" id="content">
+    <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+  </div>
 </div>
 
-<div class="tabs" id="tabs">
-  <div class="tab active" data-tab="todos" onclick="switchTab('todos')">📋 Todos</div>
-  <div class="tab" data-tab="AM" onclick="switchTab('AM')">🌅 AM</div>
-  <div class="tab" data-tab="PM" onclick="switchTab('PM')">🌆 PM</div>
-  <div class="tab" data-tab="registro" onclick="switchTab('registro')">📁 Registro</div>
+<!-- USER MENU -->
+<div class="user-menu" id="userMenu">
+  <div class="user-name" id="menuName">—</div>
+  <div class="user-email" id="menuEmail">—</div>
+  <button class="logout-btn" onclick="signOut()">🚪 Cerrar sesión</button>
 </div>
 
-<div class="content" id="content">
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-</div>
-
-<div id="install-banner" style="display:none">
+<div id="install-banner">
   <p><strong>Instalar app</strong>Agrega al inicio para acceso rápido</p>
   <button class="install-btn" id="installBtn">Instalar</button>
   <button class="dismiss-btn" onclick="dismissInstall()">✕</button>
 </div>
 
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async></script>
+
 <script>
 // ── CONFIG ──────────────────────────────────────────────────────────────────
-const SHEET_ID   = '1GXpt3RSo538eEbUTlWq4gIYiyD5pSj-ZJGApwkYoTYc';
-const SHEET_GID  = '1553759742';
-const CSV_URL    = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
-const REFRESH_MS = 60 * 1000; // auto-refresh cada 60s
+// REEMPLAZA ESTE VALOR con tu Client ID de Google OAuth 2.0
+// Instrucciones: https://console.cloud.google.com → APIs & Services → Credentials
+const GOOGLE_CLIENT_ID = 'TU_CLIENT_ID_AQUI.apps.googleusercontent.com';
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-let allScheduled = [];   // conductores programados (tabla 1)
-let allRegistry  = [];   // registro de placas (tabla 2)
-let currentTab   = 'todos';
-let searchQuery  = '';
-let refreshTimer = null;
-let deferredPrompt = null;
+const SHEET_ID  = '1GXpt3RSo538eEbUTlWq4gIYiyD5pSj-ZJGApwkYoTYc';
+const SHEET_GID = '1553759742';
+const ALLOWED_DOMAIN = 'mercadolibre.com.co';
+const REFRESH_MS = 60 * 1000;
 
-// ── PWA INSTALL ──────────────────────────────────────────────────────────────
+// ── STATE ─────────────────────────────────────────────────────────────────
+let allScheduled = [], allRegistry = [];
+let currentTab = 'todos', searchQuery = '';
+let refreshTimer = null, deferredPrompt = null;
+let accessToken = null, currentUser = null;
+
+// ── PWA INSTALL ──────────────────────────────────────────────────────────
 window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (!localStorage.getItem('installDismissed')) {
+  e.preventDefault(); deferredPrompt = e;
+  if (!localStorage.getItem('installDismissed'))
     document.getElementById('install-banner').style.display = 'flex';
-  }
 });
-
 document.getElementById('installBtn').onclick = async () => {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
   deferredPrompt = null;
   document.getElementById('install-banner').style.display = 'none';
 };
-
 function dismissInstall() {
   localStorage.setItem('installDismissed', '1');
   document.getElementById('install-banner').style.display = 'none';
 }
 
-// ── SERVICE WORKER ────────────────────────────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(console.warn);
+// ── SERVICE WORKER ────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(console.warn);
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+function showLogin() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
 }
 
-// ── CSV PARSER ────────────────────────────────────────────────────────────────
-function parseCSV(text) {
-  const lines = text.split('\n');
-  const result = [];
-  let inQuote = false, row = [], cell = '';
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    for (let j = 0; j < line.length; j++) {
-      const ch = line[j];
-      if (ch === '"') {
-        inQuote = !inQuote;
-      } else if (ch === ',' && !inQuote) {
-        row.push(cell.trim());
-        cell = '';
-      } else {
-        cell += ch;
-      }
-    }
-    if (!inQuote) {
-      row.push(cell.trim());
-      cell = '';
-      result.push(row);
-      row = [];
-    } else {
-      cell += '\n';
-    }
+function signIn() {
+  // Config not set — show instructions
+  if (GOOGLE_CLIENT_ID === 'TU_CLIENT_ID_AQUI.apps.googleusercontent.com') {
+    showLoginError('⚙️ Client ID no configurado. Consulta las instrucciones en el código.');
+    return;
   }
-  return result;
+
+  const client = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/spreadsheets.readonly profile email',
+    callback: handleAuthResponse,
+  });
+  client.requestAccessToken();
 }
 
-// ── DATA LOAD ─────────────────────────────────────────────────────────────────
+function handleAuthResponse(response) {
+  if (response.error) {
+    showLoginError('Error al iniciar sesión. Intenta de nuevo.');
+    return;
+  }
+  accessToken = response.access_token;
+
+  // Get user profile to verify domain
+  fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+    headers: { 'Authorization': `Bearer ${accessToken}` }
+  })
+  .then(r => r.json())
+  .then(profile => {
+    const email = profile.email || '';
+    if (!email.endsWith('@' + ALLOWED_DOMAIN)) {
+      accessToken = null;
+      showLoginError(`Solo se permiten cuentas @${ALLOWED_DOMAIN}.\nTu cuenta: ${email}`);
+      return;
+    }
+    currentUser = profile;
+    saveSession();
+    setupUserUI();
+    showApp();
+    loadData();
+  })
+  .catch(() => showLoginError('Error al verificar cuenta. Intenta de nuevo.'));
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function saveSession() {
+  if (currentUser) {
+    sessionStorage.setItem('user', JSON.stringify(currentUser));
+    sessionStorage.setItem('token', accessToken);
+  }
+}
+
+function loadSession() {
+  try {
+    const u = sessionStorage.getItem('user');
+    const t = sessionStorage.getItem('token');
+    if (u && t) { currentUser = JSON.parse(u); accessToken = t; return true; }
+  } catch(e) {}
+  return false;
+}
+
+function signOut() {
+  google.accounts.oauth2.revoke(accessToken, () => {});
+  accessToken = null; currentUser = null;
+  sessionStorage.clear();
+  document.getElementById('userMenu').classList.remove('open');
+  showLogin();
+}
+
+function setupUserUI() {
+  if (!currentUser) return;
+  const name = currentUser.name || currentUser.email?.split('@')[0] || '?';
+  const initial = name[0].toUpperCase();
+  document.getElementById('userInitial').textContent = initial;
+  document.getElementById('menuName').textContent = name;
+  document.getElementById('menuEmail').textContent = currentUser.email || '';
+  if (currentUser.picture) {
+    document.getElementById('userAvatar').innerHTML = `<img src="${currentUser.picture}" alt="${name}">`;
+  }
+}
+
+function toggleUserMenu() {
+  document.getElementById('userMenu').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#userMenu') && !e.target.closest('#userAvatar'))
+    document.getElementById('userMenu').classList.remove('open');
+});
+
+// ── DATA LOAD ─────────────────────────────────────────────────────────────
 async function loadData() {
+  if (!accessToken) return;
   setStatus('loading', 'Actualizando...');
-  const btn = document.getElementById('refreshBtn');
-  btn.classList.add('loading');
+  document.getElementById('refreshBtn').classList.add('loading');
 
   try {
-    const resp = await fetch(CSV_URL + '&_=' + Date.now(), { cache: 'no-store' });
+    // Use Sheets API with auth token
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/A1:P2000?majorDimension=ROWS`;
+    const resp = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${accessToken}` },
+      cache: 'no-store'
+    });
+
+    if (resp.status === 401) {
+      // Token expired — re-auth
+      signOut();
+      return;
+    }
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await resp.text();
-    processData(parseCSV(text));
+
+    const data = await resp.json();
+    processRows(data.values || []);
     setStatus('ok', `Actualizado a las ${new Date().toLocaleTimeString('es-CO', {hour:'2-digit',minute:'2-digit'})}`);
-  } catch (err) {
-    setStatus('error', 'Sin conexión – mostrando últimos datos');
+  } catch(err) {
+    setStatus('error', 'Error al cargar datos');
     console.error(err);
   }
 
-  btn.classList.remove('loading');
-  scheduleRefresh();
+  document.getElementById('refreshBtn').classList.remove('loading');
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(loadData, REFRESH_MS);
   render();
 }
 
-function processData(rows) {
-  allScheduled = [];
-  allRegistry  = [];
+function processRows(rows) {
+  allScheduled = []; allRegistry = [];
+  const T1 = ['FECHA_ETA','HORA_ETA','CICLO','SVC','TIPO_SERVICIO','CATEGORIA','DRIVER_ID','CÉDULA','NOMBRE','PLACA','STATION','OLA - RUTA'];
+  const T2 = ['Registro de Placas','Categoría','Celular','Station','Ola - Ruta'];
+  let mode = null, h1 = {}, h2 = {};
 
-  // Detect table 1 header
-  const TABLE1_HEADERS = ['FECHA_ETA','HORA_ETA','CICLO','SVC','TIPO_SERVICIO','CATEGORIA',
-    'DRIVER_ID','CÉDULA','NOMBRE','PLACA','STATION','OLA - RUTA'];
-  // Detect table 2 header
-  const TABLE2_HEADERS = ['Registro de Placas','Categoría','Celular','Station','Ola - Ruta'];
-
-  let mode = null; // 'table1' | 'table2'
-  let h1 = {}, h2 = {};
-
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
+  for (const row of rows) {
     const first = (row[0] || '').trim();
-
-    // Detect header rows
-    if (first === 'FECHA_ETA') {
-      mode = 'table1';
-      TABLE1_HEADERS.forEach((h, idx) => { h1[h] = idx; });
-      continue;
-    }
-    if (first === 'Registro de Placas') {
-      mode = 'table2';
-      TABLE2_HEADERS.forEach((h, idx) => { h2[h] = idx; });
-      continue;
-    }
-
-    if (!first || first === '') continue;
+    if (first === 'FECHA_ETA') { mode = 'table1'; T1.forEach((h,i) => h1[h]=i); continue; }
+    if (first === 'Registro de Placas') { mode = 'table2'; T2.forEach((h,i) => h2[h]=i); continue; }
+    if (!first) continue;
 
     if (mode === 'table1') {
-      const placa = (row[h1['PLACA']] || '').trim().toUpperCase();
+      const placa = (row[h1['PLACA']]||'').trim().toUpperCase();
       if (!placa) continue;
       allScheduled.push({
-        placa,
-        hora:    (row[h1['HORA_ETA']]   || '').trim(),
-        ciclo:   (row[h1['CICLO']]      || '').trim().toUpperCase(),
-        svc:     (row[h1['SVC']]        || '').trim(),
-        station: (row[h1['STATION']]    || '').trim().toUpperCase(),
-        ola:     (row[h1['OLA - RUTA']] || '').trim(),
-        tipo:    (row[h1['TIPO_SERVICIO']] || '').trim(),
-        cat:     (row[h1['CATEGORIA']]  || '').trim(),
-        nombre:  (row[h1['NOMBRE']]     || '').trim(),
+        placa, hora:(row[h1['HORA_ETA']]||'').trim(),
+        ciclo:(row[h1['CICLO']]||'').trim().toUpperCase(),
+        svc:(row[h1['SVC']]||'').trim(),
+        station:(row[h1['STATION']]||'').trim().toUpperCase(),
+        ola:(row[h1['OLA - RUTA']]||'').trim(),
+        tipo:(row[h1['TIPO_SERVICIO']]||'').trim(),
       });
     }
-
     if (mode === 'table2') {
-      const placa = (row[h2['Registro de Placas']] || '').trim().toUpperCase();
+      const placa = (row[h2['Registro de Placas']]||'').trim().toUpperCase();
       if (!placa || placa === 'SIN DATOS') continue;
       allRegistry.push({
-        placa,
-        cat:     (row[h2['Categoría']]  || '').trim(),
-        station: (row[h2['Station']]    || '').trim().toUpperCase(),
-        ola:     (row[h2['Ola - Ruta']] || '').trim(),
+        placa, cat:(row[h2['Categoría']]||'').trim(),
+        station:(row[h2['Station']]||'').trim().toUpperCase(),
+        ola:(row[h2['Ola - Ruta']]||'').trim(),
       });
     }
   }
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────────────────────────
 function render() {
   const q = searchQuery.toUpperCase().trim();
   const content = document.getElementById('content');
 
-  if (q.length >= 2) {
-    renderSearch(q, content);
-    return;
-  }
+  if (q.length >= 2) { renderSearch(q, content); return; }
+  if (currentTab === 'registro') { renderRegistry(content); return; }
 
-  if (currentTab === 'registro') {
-    renderRegistry(content);
-    return;
-  }
-
-  // Filter by ciclo tab
   let drivers = allScheduled;
-  if (currentTab === 'AM') drivers = drivers.filter(d => d.ciclo === 'AM' || d.ciclo === 'AMT');
-  if (currentTab === 'PM') drivers = drivers.filter(d => d.ciclo === 'PM');
+  if (currentTab === 'AM') drivers = drivers.filter(d => d.ciclo==='AM'||d.ciclo==='AMT');
+  if (currentTab === 'PM') drivers = drivers.filter(d => d.ciclo==='PM');
 
-  if (drivers.length === 0) {
-    content.innerHTML = emptyState('Sin conductores', 'No hay conductores en este turno.');
-    return;
-  }
+  if (!drivers.length) { content.innerHTML = emptyState('Sin conductores','No hay conductores en este turno.'); return; }
 
-  // Group by ciclo then sort by hora
   const groups = {};
-  drivers.forEach(d => {
-    const key = d.ciclo || 'SIN CICLO';
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(d);
-  });
-
+  drivers.forEach(d => { const k=d.ciclo||'—'; if(!groups[k]) groups[k]=[]; groups[k].push(d); });
   let html = '';
-  Object.keys(groups).sort().forEach(ciclo => {
-    const list = groups[ciclo].sort((a, b) => a.hora.localeCompare(b.hora));
-    html += `<div class="section-title">${ciclo} · ${list.length} conductores</div>`;
-    list.forEach(d => { html += driverCard(d, ''); });
+  Object.keys(groups).sort().forEach(c => {
+    const list = groups[c].sort((a,b)=>a.hora.localeCompare(b.hora));
+    html += `<div class="section-title">${c} · ${list.length} conductores</div>`;
+    list.forEach(d => { html += driverCard(d,''); });
   });
-
   content.innerHTML = html;
 }
 
 function renderSearch(q, content) {
-  // Search in both tables
-  const inSched = allScheduled.filter(d => d.placa.includes(q));
-  const inReg   = allRegistry.filter(d => d.placa.includes(q));
-
-  if (inSched.length === 0 && inReg.length === 0) {
-    content.innerHTML = `
-      <div class="result-card not-found">
-        <div style="font-size:40px;margin-bottom:8px">🔍</div>
-        <p>Placa <strong>${q}</strong> no encontrada</p>
-        <p style="font-size:12px;margin-top:6px">Verifica que esté en el archivo o intenta con otra</p>
-      </div>`;
+  const inSched = allScheduled.filter(d=>d.placa.includes(q));
+  const inReg = allRegistry.filter(d=>d.placa.includes(q));
+  if (!inSched.length && !inReg.length) {
+    content.innerHTML = `<div class="result-card not-found"><div style="font-size:40px;margin-bottom:8px">🔍</div><p>Placa <strong>${q}</strong> no encontrada</p></div>`;
     return;
   }
-
   let html = '';
-
-  // Show programmed drivers first (big cards)
-  if (inSched.length > 0) {
+  if (inSched.length) {
     html += `<div class="section-title">Programados (${inSched.length})</div>`;
     inSched.forEach(d => {
-      const stationClass = d.station === 'RESERVA' ? 'reserva' : '';
-      html += `
-      <div class="result-card">
-        <div class="result-plate">${highlight(d.placa, q)}</div>
+      html += `<div class="result-card">
+        <div class="result-plate">${highlight(d.placa,q)}</div>
         <div class="result-grid">
-          <div class="result-item">
-            <div class="label">Muelle / Station</div>
-            <div class="value">${d.station || '—'}</div>
-          </div>
-          <div class="result-item">
-            <div class="label">Ola</div>
-            <div class="value"><span class="ola-badge ${stationClass}">${d.ola || '—'}</span></div>
-          </div>
-          <div class="result-item">
-            <div class="label">Hora ETA</div>
-            <div class="value" style="font-size:16px">${d.hora || '—'}</div>
-          </div>
-          <div class="result-item">
-            <div class="label">Ciclo</div>
-            <div class="value" style="font-size:16px"><span class="ciclo-chip ${d.ciclo}">${d.ciclo}</span></div>
-          </div>
-          ${d.svc ? `<div class="result-item full"><div class="label">Servicio</div><div class="value" style="font-size:14px">${d.svc}</div></div>` : ''}
-        </div>
-      </div>`;
+          <div class="result-item"><div class="label">Muelle / Station</div><div class="value">${d.station||'—'}</div></div>
+          <div class="result-item"><div class="label">Ola</div><div class="value"><span class="ola-badge ${d.station==='RESERVA'?'reserva':''}">${d.ola||'—'}</span></div></div>
+          <div class="result-item"><div class="label">Hora ETA</div><div class="value" style="font-size:16px">${d.hora||'—'}</div></div>
+          <div class="result-item"><div class="label">Ciclo</div><div class="value" style="font-size:16px"><span class="ciclo-chip ${d.ciclo}">${d.ciclo}</span></div></div>
+          ${d.svc?`<div class="result-item full"><div class="label">Servicio</div><div class="value" style="font-size:14px">${d.svc}</div></div>`:''}
+        </div></div>`;
     });
   }
-
-  // Show registry matches
-  if (inReg.length > 0) {
-    html += `<div class="section-title">Registro de placas (${inReg.length})</div>`;
-    inReg.forEach(d => {
-      html += `
-      <div class="driver-card">
-        <div>
-          <div class="driver-plate">${highlight(d.placa, q)}</div>
-          <div class="driver-meta"><span>${d.cat || '—'}</span></div>
-        </div>
-        <div class="driver-right">
-          <div class="driver-station">${d.station || '—'}</div>
-          <div class="driver-ola">Ola ${d.ola || '—'}</div>
-        </div>
-      </div>`;
-    });
-  }
-
-  content.innerHTML = html;
-}
-
-function renderRegistry(content) {
-  if (allRegistry.length === 0) {
-    content.innerHTML = emptyState('Sin registros', 'No hay datos en el registro de placas.');
-    return;
-  }
-
-  // Group by ola
-  const groups = {};
-  allRegistry.forEach(d => {
-    const key = d.ola || 'Sin Ola';
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(d);
-  });
-
-  let html = '';
-  Object.keys(groups).sort().forEach(ola => {
-    const list = groups[ola];
-    html += `<div class="section-title">Ola ${ola} · ${list.length} placas</div>`;
-    list.forEach(d => {
-      html += `
-      <div class="driver-card">
-        <div>
-          <div class="driver-plate">${d.placa}</div>
-          <div class="driver-meta"><span>${d.cat || 'ANTIGUO'}</span></div>
-        </div>
-        <div class="driver-right">
-          <div class="driver-station">${d.station || '—'}</div>
-          <div class="driver-ola">Ola ${d.ola || '—'}</div>
-        </div>
-      </div>`;
-    });
-  });
-
-  content.innerHTML = html;
-}
-
-function driverCard(d, q) {
-  const plate = q ? highlight(d.placa, q) : d.placa;
-  return `
-  <div class="driver-card" onclick="searchByPlate('${d.placa}')">
-    <div>
-      <div class="driver-plate">${plate}</div>
-      <div class="driver-meta">
-        <span class="ciclo-chip ${d.ciclo}">${d.ciclo}</span>
-        <span>${d.hora}</span>
-        <span>${d.svc}</span>
-      </div>
-    </div>
-    <div class="driver-right">
-      <div class="driver-station">${d.station || '—'}</div>
-      <div class="driver-ola">Ola ${d.ola || '—'}</div>
-    </div>
-  </div>`;
-}
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function highlight(text, q) {
-  if (!q) return text;
-  return text.replace(new RegExp(q, 'gi'), m => `<mark>${m}</mark>`);
-}
-
-function emptyState(title, msg) {
-  return `<div class="empty-state"><div class="emoji">📭</div><p><strong>${title}</strong><br>${msg}</p></div>`;
-}
-
-function setStatus(state, msg) {
-  document.getElementById('statusDot').className = 'status-dot ' + state;
-  document.getElementById('statusText').textContent = msg;
-}
-
-// ── EVENTS ────────────────────────────────────────────────────────────────────
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => {
-    t.classList.toggle('active', t.dataset.tab === tab);
-  });
-  clearSearch();
-  render();
-}
-
-function clearSearch() {
-  searchQuery = '';
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchWrap').classList.remove('has-text');
-  render();
-}
-
-function searchByPlate(placa) {
-  document.getElementById('searchInput').value = placa;
-  searchQuery = placa;
-  document.getElementById('searchWrap').classList.add('has-text');
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-document.getElementById('searchInput').addEventListener('input', function() {
-  searchQuery = this.value.toUpperCase().trim();
-  document.getElementById('searchWrap').classList.toggle('has-text', searchQuery.length > 0);
-  render();
-});
-
-// ── AUTO REFRESH ──────────────────────────────────────────────────────────────
-function scheduleRefresh() {
-  clearTimeout(refreshTimer);
-  refreshTimer = setTimeout(loadData, REFRESH_MS);
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-loadData();
-</script>
-</body>
-</html>
+  if (inReg.length) {
+    html += `<div class="section-title">R
