@@ -289,8 +289,12 @@ function dismissInstall() {
   document.getElementById('install-banner').style.display = 'none';
 }
 
-// ── SERVICE WORKER ────────────────────────────────────────────────────────
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(console.warn);
+// ── SERVICE WORKER — desactivado para evitar caché viejo ─────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(r => r.unregister());
+  });
+}
 
 // ── AUTH ──────────────────────────────────────────────────────────────────
 function showLogin() {
@@ -303,17 +307,18 @@ function showApp() {
 }
 
 function signIn() {
-  // Use redirect flow — works on iOS Safari, Android, desktop
+  const btn = document.querySelector('.google-btn');
+  if (btn) { btn.textContent = 'Conectando...'; btn.disabled = true; }
+
   const REDIRECT_URI = 'https://jaiderhernandezme.github.io/final-station/';
-  const params = new URLSearchParams({
-    client_id: GOOGLE_CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
-    response_type: 'token',
-    scope: 'https://www.googleapis.com/auth/spreadsheets.readonly profile email',
-    include_granted_scopes: 'true',
-    state: 'signin'
-  });
-  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth'
+    + '?client_id=' + encodeURIComponent(GOOGLE_CLIENT_ID)
+    + '&redirect_uri=' + encodeURIComponent(REDIRECT_URI)
+    + '&response_type=token'
+    + '&scope=' + encodeURIComponent('https://www.googleapis.com/auth/spreadsheets.readonly profile email')
+    + '&state=signin';
+
+  window.location.assign(url);
 }
 
 function handleAuthResponse(response) {
@@ -508,7 +513,4 @@ function renderSearch(q, content) {
           <div class="result-item"><div class="label">Hora ETA</div><div class="value" style="font-size:16px">${d.hora||'—'}</div></div>
           <div class="result-item"><div class="label">Ciclo</div><div class="value" style="font-size:16px"><span class="ciclo-chip ${d.ciclo}">${d.ciclo}</span></div></div>
           ${d.svc?`<div class="result-item full"><div class="label">Servicio</div><div class="value" style="font-size:14px">${d.svc}</div></div>`:''}
-        </div></div>`;
-    });
-  }
- 
+        
