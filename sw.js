@@ -1,4 +1,4 @@
-const CACHE_NAME = 'final-station-v1';
+const CACHE_NAME = 'final-station-v3';
 const STATIC_ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
