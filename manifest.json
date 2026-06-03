@@ -1,0 +1,22 @@
+{
+  "name": "Final Station - Conductores",
+  "short_name": "Final Station",
+  "description": "Consulta de muelles y olas para conductores",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFE600",
+  "theme_color": "#FFE600",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/FFE600/333333?text=FS",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/FFE600/333333?text=FS",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
