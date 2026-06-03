@@ -183,7 +183,7 @@
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="login-screen" style="display:none">
+<div id="login-screen" style="display:flex">
   <div class="login-logo">🚚</div>
   <div class="login-title">Final Station</div>
   <div class="login-sub">Sistema de conductores<br>Ingresa con tu cuenta corporativa</div>
@@ -303,18 +303,24 @@ function showApp() {
 }
 
 function signIn() {
-  // Config not set — show instructions
-  if (GOOGLE_CLIENT_ID === 'TU_CLIENT_ID_AQUI.apps.googleusercontent.com') {
-    showLoginError('⚙️ Client ID no configurado. Consulta las instrucciones en el código.');
+  if (typeof google === 'undefined' || !google.accounts) {
+    showLoginError('Error cargando Google. Verifica tu conexión e intenta de nuevo.');
     return;
   }
 
-  const client = google.accounts.oauth2.initTokenClient({
-    client_id: GOOGLE_CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/spreadsheets.readonly profile email',
-    callback: handleAuthResponse,
-  });
-  client.requestAccessToken();
+  try {
+    const client = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'https://www.googleapis.com/auth/spreadsheets.readonly profile email',
+      callback: handleAuthResponse,
+      error_callback: (err) => {
+        showLoginError('Error al iniciar sesión: ' + (err.message || err.type || 'desconocido'));
+      }
+    });
+    client.requestAccessToken();
+  } catch(e) {
+    showLoginError('Error: ' + e.message);
+  }
 }
 
 function handleAuthResponse(response) {
@@ -508,9 +514,4 @@ function renderSearch(q, content) {
           <div class="result-item"><div class="label">Ola</div><div class="value"><span class="ola-badge ${d.station==='RESERVA'?'reserva':''}">${d.ola||'—'}</span></div></div>
           <div class="result-item"><div class="label">Hora ETA</div><div class="value" style="font-size:16px">${d.hora||'—'}</div></div>
           <div class="result-item"><div class="label">Ciclo</div><div class="value" style="font-size:16px"><span class="ciclo-chip ${d.ciclo}">${d.ciclo}</span></div></div>
-          ${d.svc?`<div class="result-item full"><div class="label">Servicio</div><div class="value" style="font-size:14px">${d.svc}</div></div>`:''}
-        </div></div>`;
-    });
-  }
-  if (inReg.length) {
-    html += `
+          ${d.svc?`<div class="result-item full"><div class="label">
