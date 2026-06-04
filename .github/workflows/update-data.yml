@@ -1,0 +1,64 @@
+name: Update Sheet Data
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install google-auth google-auth-httplib2 google-api-python-client
+
+      - name: Fetch Sheet data
+        env:
+          GOOGLE_SA_KEY: ${{ secrets.GOOGLE_SA_KEY }}
+        run: |
+          python3 << 'PYEOF'
+          import json, os, datetime
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          sa_key = json.loads(os.environ['GOOGLE_SA_KEY'])
+          creds = service_account.Credentials.from_service_account_info(sa_key, scopes=['https://www.googleapis.com/auth/spreadsheets.readonly'])
+          service = build('sheets', 'v4', credentials=creds)
+          result = service.spreadsheets().values().get(spreadsheetId='1GXpt3RSo538eEbUTlWq4gIYiyD5pSj-ZJGApwkYoTYc', range='A1:P2000', majorDimension='ROWS').execute()
+          rows = result.get('values', [])
+          T1 = ['FECHA_ETA','HORA_ETA','CICLO','SVC','TIPO_SERVICIO','CATEGORIA','DRIVER_ID','CEDULA','NOMBRE','PLACA','STATION','OLA - RUTA']
+          T2 = ['Registro de Placas','Categoria','Celular','Station','Ola - Ruta']
+          def g(row, idx, d=''):
+              try: return row[idx].strip() if len(row) > idx and row[idx] else d
+              except: return d
+          mode=None; h1={}; h2={}; scheduled=[]; registry=[]
+          for row in rows:
+              first = row[0].strip() if row else ''
+              if first == 'FECHA_ETA': mode='t1'; h1={h:i for i,h in enumerate(T1)}; continue
+              if first == 'Registro de Placas': mode='t2'; h2={h:i for i,h in enumerate(T2)}; continue
+              if not first: continue
+              if mode=='t1':
+                  p=g(row,h1.get('PLACA',9)).upper()
+                  if p: scheduled.append({'placa':p,'hora':g(row,h1.get('HORA_ETA',1)),'ciclo':g(row,h1.get('CICLO',2)).upper(),'svc':g(row,h1.get('SVC',3)),'station':g(row,h1.get('STATION',10)).upper(),'ola':g(row,h1.get('OLA - RUTA',11))})
+              if mode=='t2':
+                  p=g(row,h2.get('Registro de Placas',0)).upper()
+                  if p and p!='SIN DATOS': registry.append({'placa':p,'cat':g(row,h2.get('Categoria',1)),'station':g(row,h2.get('Station',3)).upper(),'ola':g(row,h2.get('Ola - Ruta',4))})
+          with open('data.json','w',encoding='utf-8') as f: json.dump({'updated':datetime.datetime.utcnow().isoformat()+'Z','scheduled':scheduled,'registry':registry},f,ensure_ascii=False)
+          print(f'OK: {len(scheduled)} programados, {len(registry)} registro')
+          PYEOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git diff --staged --quiet || git commit -m "chore: update data.json [skip ci]"
+          git push
