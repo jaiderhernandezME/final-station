@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta name="theme-color" content="#3483FA"/>
+  <title>Final Station – Sync</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      background:#3483FA; min-height:100vh;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:24px; color:white;
+    }
+    .emoji { font-size:64px; margin-bottom:16px; }
+    h1 { font-size:24px; font-weight:800; margin-bottom:8px; }
+    p { font-size:15px; opacity:.85; text-align:center; line-height:1.5; margin-bottom:32px; }
+
+    .btn {
+      width:100%; max-width:320px; padding:18px; border:none; border-radius:14px;
+      font-size:18px; font-weight:800; cursor:pointer; transition:transform .1s;
+      margin-bottom:12px;
+    }
+    .btn:active { transform:scale(.97); }
+    .btn-primary { background:white; color:#3483FA; }
+    .btn-secondary { background:rgba(255,255,255,.15); color:white; font-size:14px; padding:14px; }
+
+    .status {
+      margin-top:20px; padding:16px 20px; background:rgba(255,255,255,.15);
+      border-radius:12px; font-size:14px; text-align:center; line-height:1.5;
+      max-width:320px; width:100%; display:none;
+    }
+    .status.show { display:block; }
+    .status.success { background:rgba(0,166,80,.3); }
+    .status.error { background:rgba(242,61,79,.3); }
+
+    .setup-box {
+      background:rgba(255,255,255,.1); border-radius:14px; padding:20px;
+      max-width:320px; width:100%; margin-top:16px;
+    }
+    .setup-box label { font-size:13px; opacity:.85; display:block; margin-bottom:8px; }
+    .setup-box input {
+      width:100%; padding:12px; border-radius:8px; border:2px solid rgba(255,255,255,.3);
+      background:rgba(255,255,255,.1); color:white; font-size:14px; font-family:monospace;
+      outline:none;
+    }
+    .setup-box input::placeholder { opacity:.5; }
+    .setup-box input:focus { border-color:white; }
+
+    .back-link { margin-top:24px; font-size:13px; opacity:.7; text-decoration:none; color:white; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spinner { display:inline-block; animation:spin 1s linear infinite; }
+  </style>
+</head>
+<body>
+
+<div class="emoji" id="icon">🔄</div>
+<h1 id="title">Sincronizar datos</h1>
+<p id="desc">Actualiza la app con los datos más recientes del Google Sheet</p>
+
+<button class="btn btn-primary" id="syncBtn" onclick="doSync()">⚡ Sincronizar ahora</button>
+<button class="btn btn-secondary" id="settingsBtn" onclick="showSettings()">⚙️ Configurar token</button>
+
+<div class="status" id="status"></div>
+
+<div class="setup-box" id="setupBox" style="display:none">
+  <label>Token de GitHub (se guarda en tu celular):</label>
+  <input type="password" id="tokenInput" placeholder="ghp_..." autocomplete="off" spellcheck="false"/>
+  <br><br>
+  <button class="btn btn-primary" onclick="saveToken()" style="font-size:15px;padding:14px">
+    💾 Guardar token
+  </button>
+</div>
+
+<a class="back-link" href="./index.html">← Volver a la app</a>
+
+<script>
+const GH_OWNER = 'jaiderhernandezME';
+const GH_REPO  = 'final-station';
+const WORKFLOW  = 'update-data.yml';
+
+function getToken() {
+  return localStorage.getItem('gh_sync_token') || '';
+}
+
+function saveToken() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t.startsWith('ghp_') && !t.startsWith('github_pat_')) {
+    showStatus('Token inválido. Debe empezar con ghp_ o github_pat_', 'error');
+    return;
+  }
+  localStorage.setItem('gh_sync_token', t);
+  document.getElementById('setupBox').style.display = 'none';
+  showStatus('✅ Token guardado. Ya puedes sincronizar.', 'success');
+}
+
+function showSettings() {
+  const box = document.getElementById('setupBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('tokenInput').value = getToken();
+}
+
+async function doSync() {
+  const token = getToken();
+  if (!token) {
+    showStatus('Primero configura el token de GitHub. Toca ⚙️ Configurar token.', 'error');
+    document.getElementById('setupBox').style.display = 'block';
+    return;
+  }
+
+  // UI loading
+  const btn = document.getElementById('syncBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner">🔄</span> Sincronizando...';
+  document.getElementById('icon').textContent = '⏳';
+  showStatus('⏳ Iniciando sincronización con el Sheet...', '');
+
+  try {
+    // Trigger workflow
+    const resp = await fetch(
+      `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/actions/workflows/${WORKFLOW}/dispatches`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ref: 'main' })
+      }
+    );
+
+    if (resp.status === 204) {
+      showStatus('✅ Sincronización iniciada!\n\nEspera 25 segundos y luego vuelve a la app y toca ↻ Actualizar.', 'success');
+      document.getElementById('icon').textContent = '✅';
+      document.getElementById('title').textContent = '¡Listo!';
+
+      // Countdown
+      let sec = 25;
+      const timer = setInterval(() => {
+        sec--;
+        if (sec > 0) {
+          showStatus(`✅ Sincronizando datos del Sheet...\n\n${sec} segundos restantes`, 'success');
+        } else {
+          clearInterval(timer);
+          showStatus('✅ ¡Datos actualizados!\n\nVuelve a la app y toca ↻ Actualizar.', 'success');
+          document.getElementById('icon').textContent = '🚀';
+        }
+      }, 1000);
+    } else if (resp.status === 401) {
+      showStatus('❌ Token inválido o expirado. Toca ⚙️ y actualiza el token.', 'error');
+      document.getElementById('icon').textContent = '❌';
+    } else {
+      const text = await resp.text();
+      showStatus(`❌ Error ${resp.status}: ${text}`, 'error');
+      document.getElementById('icon').textContent = '❌';
+    }
+  } catch(e) {
+    showStatus('❌ Sin conexión. Verifica tu internet e intenta de nuevo.', 'error');
+    document.getElementById('icon').textContent = '❌';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '⚡ Sincronizar ahora';
+}
+
+function showStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status show ' + type;
+}
+
+// Check if token is configured
+window.addEventListener('load', () => {
+  if (!getToken()) {
+    showStatus('⚠️ Configura el token para poder sincronizar.', '');
+    document.getElementById('setupBox').style.display = 'block';
+  }
+});
+</script>
+</body>
+</html>
