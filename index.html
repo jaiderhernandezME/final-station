@@ -387,4 +387,12 @@ function showToast(msg) {
   }
   t.textContent = msg;
   t.style.opacity = '1';
-  clearTimeo
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2000);
+}
+
+updateSavedUI();
+loadData();
+</script>
+</body>
+</html>
