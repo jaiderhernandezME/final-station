@@ -161,6 +161,7 @@
 <div class="tabs">
   <div class="tab active" data-tab="todos" onclick="switchTab('todos')">📋 Todos</div>
   <div class="tab" data-tab="AM" onclick="switchTab('AM')">🌅 AM</div>
+  <div class="tab" data-tab="AMT" onclick="switchTab('AMT')">🌄 AMT</div>
   <div class="tab" data-tab="PM" onclick="switchTab('PM')">🌆 PM</div>
   <div class="tab" data-tab="registro" onclick="switchTab('registro')">📁 Registro</div>
 </div>
@@ -222,8 +223,9 @@ function render() {
   if (currentTab === 'registro') { renderRegistry(content); return; }
 
   let drivers = allScheduled;
-  if (currentTab === 'AM') drivers = drivers.filter(d => d.ciclo==='AM'||d.ciclo==='AMT');
-  if (currentTab === 'PM') drivers = drivers.filter(d => d.ciclo==='PM');
+  if (currentTab === 'AM')  drivers = drivers.filter(d => d.ciclo==='AM');
+  if (currentTab === 'AMT') drivers = drivers.filter(d => d.ciclo==='AMT');
+  if (currentTab === 'PM')  drivers = drivers.filter(d => d.ciclo==='PM');
 
   if (!drivers.length) { content.innerHTML = emptyState('Sin conductores','No hay conductores en este turno.'); return; }
 
@@ -385,12 +387,4 @@ function showToast(msg) {
   }
   t.textContent = msg;
   t.style.opacity = '1';
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.style.opacity = '0'; }, 2000);
-}
-
-updateSavedUI();
-loadData();
-</script>
-</body>
-</html>
+  clearTimeo
