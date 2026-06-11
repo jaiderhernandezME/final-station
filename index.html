@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#FFE600" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Final Station" />
+  <meta name="apple-mobile-web-app-title" content="Station Place" />
   <link rel="manifest" href="./manifest.json" />
-  <title>Final Station</title>
+  <title>Station Place</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --yellow:#FFE600;--dark:#1A1A1A;--gray:#F5F5F5;--border:#E0E0E0;--text:#333;--muted:#777;--green:#00A650;--orange:#FF7733;--blue:#3483FA;--red:#F23D4F; }
@@ -15,7 +15,10 @@
 
     header { background:var(--yellow);padding:14px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.12); }
     .header-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:10px; }
-    header h1 { font-size:18px;font-weight:800;color:var(--dark); }
+    .header-brand { display:flex;align-items:center;gap:10px; }
+    .ml-logo { height:22px;width:auto;display:block; }
+    .header-divider { width:1.5px;height:20px;background:rgba(0,0,0,.25);border-radius:2px; }
+    header h1 { font-size:17px;font-weight:900;color:var(--dark);letter-spacing:-.3px; }
     .refresh-btn { background:var(--dark);color:var(--yellow);border:none;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer; }
     .refresh-btn.loading .icon { animation:spin 1s linear infinite;display:inline-block; }
     @keyframes spin { to { transform:rotate(360deg); } }
@@ -133,7 +136,14 @@
 <body>
 <header>
   <div class="header-top">
-    <h1>🚚 Final Station</h1>
+    <div class="header-brand">
+      <img class="ml-logo"
+           src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.21.22/mercadolibre/logo__large_plus.png"
+           alt="MercadoLibre"
+           onerror="this.style.display='none'"/>
+      <div class="header-divider"></div>
+      <h1>Station Place</h1>
+    </div>
     <button class="refresh-btn" id="refreshBtn" onclick="loadData()"><span class="icon">↻</span> Actualizar</button>
   </div>
   <div class="search-wrap" id="searchWrap">
@@ -384,4 +394,3 @@ loadData();
 </script>
 </body>
 </html>
-                                                                                         
