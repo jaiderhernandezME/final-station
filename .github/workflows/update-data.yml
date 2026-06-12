@@ -78,6 +78,14 @@ jobs:
 
           print(f"CICLO lookup built: {len(placa_ciclo)} plates")
 
+          def ciclo_from_route(route):
+              """Infer ciclo from ROUTE_NAME field (e.g. 'A2_PM1' -> 'PM', 'B1_AMT2' -> 'AMT')"""
+              r = route.upper()
+              if 'AMT' in r: return 'AMT'
+              if 'AM'  in r: return 'AM'
+              if 'PM'  in r: return 'PM'
+              return ''
+
           # ── STEP 2: Read Assignments tab ──
           result = service.spreadsheets().values().get(
               spreadsheetId=SHEET_ID,
@@ -107,7 +115,8 @@ jobs:
               key = patente + muelle + ola
               if key in seen: continue
               seen.add(key)
-              ciclo = placa_ciclo.get(patente, '')
+              # Ciclo: 1st try the cross-tab lookup, 2nd fallback to ROUTE_NAME
+              ciclo = placa_ciclo.get(patente, '') or ciclo_from_route(route)
               scheduled.append({
                   'placa': patente,
                   'station': muelle,
@@ -132,13 +141,4 @@ jobs:
           amt = sum(1 for d in scheduled if d['ciclo']=='AMT')
           pm  = sum(1 for d in scheduled if d['ciclo']=='PM')
           sin = sum(1 for d in scheduled if not d['ciclo'])
-          print(f"OK: {len(scheduled)} conductores — AM:{am} AMT:{amt} PM:{pm} sin_ciclo:{sin}")
-          PYEOF
-
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data.json
-          git diff --staged --quiet || git commit -m "chore: update data.json [skip ci]"
-          git push
+    
