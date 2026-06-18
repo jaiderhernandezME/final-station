@@ -112,7 +112,9 @@ jobs:
               svc     = g(row, h.get('FACILITY_ID', 0))
               route   = g(row, h.get('ROUTE_NAME', 2))
               if not patente or patente in ('PATENTE',): continue
-              key = patente + muelle + ola
+              # Deduplicate by placa+ola — same vehicle in same wave is one entry
+              # (different muelles for same placa+ola = capture error, keep first)
+              key = patente + '|' + ola
               if key in seen: continue
               seen.add(key)
               # Ciclo: 1st try the cross-tab lookup, 2nd fallback to ROUTE_NAME
@@ -141,4 +143,13 @@ jobs:
           amt = sum(1 for d in scheduled if d['ciclo']=='AMT')
           pm  = sum(1 for d in scheduled if d['ciclo']=='PM')
           sin = sum(1 for d in scheduled if not d['ciclo'])
-    
+          print(f"OK: {len(scheduled)} conductores — AM:{am} AMT:{amt} PM:{pm} sin_ciclo:{sin}")
+          PYEOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git diff --staged --quiet || git commit -m "chore: update data.json [skip ci]"
+          git push
