@@ -241,8 +241,13 @@ function render() {
 }
 
 function renderSearch(q, content) {
-  const inSched = allScheduled.filter(d=>d.placa.includes(q));
-  const inReg   = allRegistry.filter(d=>d.placa.includes(q));
+  // Exact match first; if none found, fall back to substring
+  let inSched = allScheduled.filter(d=>d.placa===q);
+  let inReg   = allRegistry.filter(d=>d.placa===q);
+  if (!inSched.length && !inReg.length) {
+    inSched = allScheduled.filter(d=>d.placa.includes(q));
+    inReg   = allRegistry.filter(d=>d.placa.includes(q));
+  }
   if (!inSched.length && !inReg.length) {
     content.innerHTML=`<div class="result-card not-found"><div style="font-size:40px;margin-bottom:8px">🔍</div><p>Placa <strong>${q}</strong> no encontrada</p></div>`;
     return;
